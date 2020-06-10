@@ -1,0 +1,56 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    ViewBag.Title = "";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Verify</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162977525-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+
+
+        gtag('config', 'UA-162977525-1');
+    </script>
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="/bundles/jquery?v=8Oos0avDZyPg-cbyVzvkIfERIE1DGSe3sRQdCSYrgEQ1"></script>
+    <script src="/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="/bundles/bootstrap?v=w6BYJb0bUOvf8s68Ce8tszYipolOdhcRhcKpxn6l8841"></script>
+
+    <script src="/bundles/modernizr?v=inCVuEFe6J4Q07A0AcRsbJic_UE5MwpRMNGcOtk94TE1"></script>
+
+
+</head>
+<body>
+    <div class="container-fluid signInPage col-lg-12" style="margin-top:25%;" >
+        <button class="btn btn-primary"  id="signInWithVSTS">
+            Sign In
+        </button>
+    </div>
+
+
+</body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#signInWithVSTS').click(function () {
+            window.location.href = "../Account/index";
+        });
+
+
+    });
+</script>

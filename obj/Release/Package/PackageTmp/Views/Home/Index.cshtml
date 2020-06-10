@@ -1,0 +1,160 @@
+﻿@using System;
+<div class="row">
+    <div class="col-md-3" style="margin-left:80px">
+        <label style="margin-top:30px;">
+            Organization :
+        </label>
+        <select class="form-control" id="org"></select>
+        <p id="NoOrgSelected" hidden="hidden" class="text-danger">!!!Please Select Any Organisation</p>
+
+    </div>
+    <div class="col-md-3" style="margin-left:80px" id="AccessTypeDrop" hidden>
+        <label style="margin-top:30px;">
+            Access Types :
+        </label>
+        <select class="form-control" id="AccessTypes"></select>
+
+    </div>
+</div>
+
+<img src="~/Content/images/loadinggif.gif" style="margin-left:50%" height="100" id="load" hidden />
+<div id="Counts" hidden>
+    <table id="Table2" class="table-bordered my-4">
+        <thead id="Tablehead2">
+
+        </thead>
+        <tbody id="TableBody2">
+        </tbody>
+    </table>
+</div>
+<div id="datatable" hidden>
+    <table id="Table" class="table table-bordered">
+        <thead>
+            <tr><td>Name</td><td>UserId</td><td>AccessLevel</td><td>Last Access</td><td>Date Created</td><td>Access Remarks</td></tr>
+        </thead>
+        <tbody id="TableBody">
+        </tbody>
+    </table>
+</div>
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>*@
+@*<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>*@
+
+
+<script>
+    var users;
+    $(document).ready(function () {
+
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '@Url.Action("AccountList","Account")',
+            success: function (data) {
+                 var s = '<option value="0">--Choose Organisation--</option>';
+                $("#org").empty();
+
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].accountName + '">' + data[i].accountName + '</option>';
+                }
+                $("#org").append(s);
+            }
+        });
+    });
+
+    $('#org').change(function () {
+        document.getElementById("AccessTypeDrop").hidden = true;
+        document.getElementById("datatable").hidden = true;
+        document.getElementById("Counts").hidden = true;
+            var Org = $('#org').val();
+            if (Org == "0") {
+                document.getElementById("NoOrgSelected").hidden = false;
+                return;
+        }
+        document.getElementById("load").hidden = false;
+            $.ajax({
+                type: 'get',
+                data: { 'organisation': Org },
+                url: '@Url.Action("GetUserDetails","Home")',
+                success: function (data) {
+
+                    document.getElementById("load").hidden = true;
+                    document.getElementById("AccessTypeDrop").hidden = false;
+                    document.getElementById("datatable").hidden = false;
+                    document.getElementById("Counts").hidden = false;
+
+
+                    if (data == null)
+                        alert("Failed To Fetch Users Of : " + Org);
+                    users = data;
+                    SelectedAccesstype = "0";
+                    DisplayUsers();
+                },
+                failure: function () {
+
+                        alert("Failed To Fetch Users Of : " + Org);
+
+                }
+            });
+    });
+    var SelectedAccesstype;
+    $("#AccessTypes").change(function () {
+        SelectedAccesstype = $("#AccessTypes").val();
+        FillMainTable();
+    });
+    function DisplayUsers() {
+
+        $("#AccessTypes").empty();
+        var accesstype = '<option value="0">---All---</option>';
+        for (var key in users.AccessLevels) {
+            if (users.AccessLevels.hasOwnProperty(key))
+                accesstype+= "<option  value='"+key+"'>" + key + "</option>";
+
+        }
+        $("#AccessTypes").append(accesstype);
+        $("#TableBody2").empty();
+        var accessTypes = "<tr>";
+               var counts = "<tr>";
+         for (var key in users.AccessLevels) {
+             if (users.AccessLevels.hasOwnProperty(key)) {
+                 accessTypes += '<th class="py-2 px-4">' + key + '</th>';
+                 counts+='<td class="py-2 px-4">' + users.AccessLevels[key] + '</td>'
+             }
+
+        }
+        accessTypes += "</tr>";
+        counts += "</tr>";
+        $("#TableBody2").append(accessTypes);
+        $("#TableBody2").append(counts);
+        FillMainTable();
+    }
+    function FillMainTable() {
+        var tabledata = '<table id="Table" class="table table-bordered"><thead><tr><th>Name</th><th>UserId</th><th>AccessLevel</th><th>Last Accessed</th><th>Date Added</th><th>Access Remarks</th></tr></thead><tbody id="TableBody">';
+        if (SelectedAccesstype == "0") {
+            for (var i = 0; i < users.count; i++) {
+                var row = "<tr><td>" + users.value[i].user.displayName + "</td><td>" + users.value[i].user.principalName + "</td><td>" + users.value[i].accessLevel.licenseDisplayName + "</td><td>" + users.value[i].LastAccessDate + "</td><td>" + users.value[i].DateCreated + "</td>";
+                if (users.value[i].AccesedRecently == true)
+                    row += "<td></td></tr>";
+                else
+                    row += "<td>Not accessed in the last 30 days</td></tr>";
+                tabledata += row;
+            }
+        }
+        else {         
+            for (var i = 0; i < users.count; i++) {
+                console.log(SelectedAccesstype);
+                console.log(users.value[i].accessLevel.licenseDisplayName);
+                if (SelectedAccesstype == users.value[i].accessLevel.licenseDisplayName) {
+                    var row = "<tr><td>" + users.value[i].user.displayName + "</td><td>" + users.value[i].user.principalName + "</td><td>" + users.value[i].accessLevel.licenseDisplayName + "</td><td>" + users.value[i].LastAccessDate + "</td><td>" + users.value[i].DateCreated + "</td>";
+                    if (users.value[i].AccesedRecently == true)
+                        row += "<td></td></tr>";
+                    else
+                        row += "<td>Not accessed in the last 30 days</td></tr>";
+                    tabledata += row;
+            }
+         }
+        }
+        tabledata += '</tbody></table>';
+        $("#datatable").html(tabledata);
+         $('#Table').DataTable();
+    }
+</script>
