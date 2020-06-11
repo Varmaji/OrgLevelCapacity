@@ -12,12 +12,27 @@ namespace CustomReport.Models
         public List<CapByTeamMember> CapByTeamMember { get; set; }
         public Dictionary<string, int> TotalLeavesperMember { get; set; }
         public List<CapacityOfTeam> TotalCapacityOfTeam { get; set; }
+        public Dictionary<string, List<CapacityDetails>> projectCapacityModel { get; set; }
+        public Dictionary<string, int> projectCapacity { get; set; }
+        public Dictionary<string, List<PTCapacity>> ProjectTeamCapacity { get; set; }
+    }
 
-        public Dictionary<string, List<CapacityDetails>> projectCapacityModel;
-
-        public Dictionary<string, int> projectCapacity;
-
-        public Dictionary<string, Dictionary<string, int>> ProjectTeamCapacity = new Dictionary<string, Dictionary<string, int>>();
+    public class PTCapacity
+    {
+        public string teamName { get; set; }
+        public string iterationStart { get; set; }
+        public string iterationEnd { get; set; }
+        public string iterationPath { get; set; }
+        public Dictionary<string, int> TeamWiseCapacityDetails { get; set; }
+    }
+    public class CapacityDetails
+    {
+        public string teamName { get; set; }
+        public string IterationPath { get; set; }
+        public string iterationStart { get; set; }
+        public string iterationEnd { get; set; }
+        public int count { get; set; }
+        public List<Capacity> value { get; set; }
     }
 
     public class CurrentTeamCapacity
@@ -86,13 +101,7 @@ namespace CustomReport.Models
         public int NoOfDaysDayOff { get; set; }
 
     }
-    public class CapacityDetails
-    {
-        public string teamName { get; set; }
-        public string IterationPath { get; set; }
-        public int count { get; set; }
-        public List<Capacity> value { get; set; }
-    }
+
 
     public class TeamTotalCapacity
     {

@@ -20,9 +20,8 @@ namespace OrgLevelTeamCapacity.Controllers
 {
     public class OrganzationLevelCapacityController : Controller
     {
-      
-        TeamCapacity capacity = new TeamCapacity();
 
+        TeamCapacity capacity = new TeamCapacity();
 
         public AccountService service = new AccountService();
         public ActionResult Index()
@@ -73,10 +72,12 @@ namespace OrgLevelTeamCapacity.Controllers
         public JsonResult ProjectTeamIterationLevel(string orgVal)
         {
             ProjectModel project = new ProjectModel();
-            
+            capacity.ProjectTeamCapacity = new Dictionary<string, List<PTCapacity>>();
             string responseBody = "";
             capacity.projectCapacityModel = new Dictionary<string, List<CapacityDetails>>();
             capacity.projectCapacity = new Dictionary<string, int>();
+            
+            // capacity.CurrentprojectCapacity = new Dictionary<string, int>();
             try
             {
                 using (HttpClient client = new HttpClient())
@@ -143,12 +144,12 @@ namespace OrgLevelTeamCapacity.Controllers
                                             iterationDetails = JsonConvert.DeserializeObject<IterationDetails>(responseBody);
                                             iterationDetails.teamname = teamName;
                                             ListIterateDetails.Add(iterationDetails);
-                                           
+
                                         }
                                     }
 
-                                }                                
-                               capacity= GetTeamCapacityDetails(orgVal, ProjName, ListIterateDetails);
+                                }
+                                capacity = GetTeamCapacityDetails(orgVal, ProjName, ListIterateDetails);
                             }
                         }
                     }
@@ -158,7 +159,7 @@ namespace OrgLevelTeamCapacity.Controllers
             {
 
             }
-            return Json(capacity,JsonRequestBehavior.AllowGet);
+            return Json(capacity, JsonRequestBehavior.AllowGet);
         }
 
         public TeamCapacity GetTeamCapacityDetails(string org, string project, List<IterationDetails> iterations)
@@ -172,9 +173,10 @@ namespace OrgLevelTeamCapacity.Controllers
             List<CustomReport.Models.CapacityDetails> capacityList = new List<CapacityDetails>();
             capacity.TotalLeavesperMember = new Dictionary<string, int>();
             List<string> AddedTeamMember = new List<string>();
-            CapacityCalculator capacityCalculator = new CapacityCalculator(); 
-
-
+            CapacityCalculator capacityCalculator = new CapacityCalculator();
+            PTCapacity pTCapacity = new PTCapacity();
+            List<PTCapacity> PTCap = new List<PTCapacity>();
+            pTCapacity.TeamWiseCapacityDetails = new Dictionary<string, int>();
             foreach (var ListIterations in iterations)
             {
                 foreach (var item in ListIterations.value)
@@ -200,6 +202,8 @@ namespace OrgLevelTeamCapacity.Controllers
                                 capacitydetails = JsonConvert.DeserializeObject<CapacityDetails>(responseBody);
                                 capacitydetails.teamName = teamname;
                                 capacitydetails.IterationPath = item.path;
+                                capacitydetails.iterationStart = item.attributes.startDate;
+                                capacitydetails.iterationEnd = item.attributes.finishDate;
                                 capacityList.Add(capacitydetails);
                             }
                         }
@@ -207,34 +211,53 @@ namespace OrgLevelTeamCapacity.Controllers
                 }
 
             }
-            var totalCapacity = 0.0;
-            var individualTeamCapacity = 0.0;
+            var totalCapacity = 0.0; //Project Capacity
+            var individualTeamCapacity = 0.0;//TeamCapacity total
+            var remainingCapacity = 0.0; ;
             Dictionary<string, int> TeamWiseTotalCapacity = new Dictionary<string, int>();
+           
             foreach (var i in capacityList)
             {
+                // remainingindividualTeamCapacity = 0;
                 individualTeamCapacity = 0;
                 foreach (var j in i.value)
                 {
-                    
+                    Double Dayoff = 0.0;
+                    int TotalOffs = 0;
                     if (j.activities.Count > 0)
                     {
-                        float.TryParse(j.activities[0].capacityPerDay, out float val);
-                        totalCapacity +=val ;
+                        var perUserCap = j.activities[0].capacityPerDay;
+                        float.TryParse(perUserCap, out float val);
+                        if (j.daysOff.Count > 0)
+                        {
+                            for (int k = 0; k < j.daysOff.Count; k++)
+                            {
+                                Dayoff = GetBusinessDays(Convert.ToDateTime(j.daysOff[k].start), Convert.ToDateTime(j.daysOff[k].end));
+                                TotalOffs += (int)Dayoff;
+                            }
+                        }
+                        remainingCapacity = Dayoff * val;
+
+                        totalCapacity += val;
                         individualTeamCapacity += val;
-
                     }
-
+                    pTCapacity.iterationStart = Convert.ToDateTime(i.iterationStart).ToString("MM/dd/yyyy");
+                    pTCapacity.iterationEnd = Convert.ToDateTime(i.iterationEnd).ToString("MM/dd/yyyy");
                 }
-                TeamWiseTotalCapacity.Add(i.teamName, (int)individualTeamCapacity);
+                pTCapacity.TeamWiseCapacityDetails.Add(i.teamName, (int)individualTeamCapacity);
+                pTCapacity.iterationPath = i.IterationPath;
             }
-            capacity.ProjectTeamCapacity.Add(project, TeamWiseTotalCapacity);
-            capacity.projectCapacity.Add(project,(int)totalCapacity);
+
+            PTCap.Add(pTCapacity);
+
+            capacity.ProjectTeamCapacity.Add(project, PTCap);
+            capacity.projectCapacity.Add(project, (int)totalCapacity);
             capacity.projectCapacityModel.Add(project, capacityList);
-            
-            
+
+
             return capacity;
         }
-         public static double GetBusinessDays(DateTime startD, DateTime endD)
+        public static double GetBusinessDays(DateTime startD, DateTime endD)
         {
             double calcBusinessDays =
                 1 + ((endD - startD).TotalDays * 5 -
