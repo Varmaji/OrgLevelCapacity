@@ -259,7 +259,6 @@ C:\Users\ravivarmay\source\repos\OrgLevelCapacity\bin\System.Web.WebPages.Deploy
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\bin\System.Web.WebPages.Razor.xml
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\bin\Antlr3.Runtime.pdb
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\ravivarmay\source\repos\OrgLevelCapacity\obj\Debug\DisplayUsersWebApp.csprojAssemblyReference.cache
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\obj\Debug\DisplayUsersWebApp.csproj.CoreCompileInputs.cache
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\obj\Debug\DisplayUsersWebApp.csproj.CopyComplete
 C:\Users\ravivarmay\source\repos\OrgLevelCapacity\obj\Debug\DisplayUsersWebApp.dll

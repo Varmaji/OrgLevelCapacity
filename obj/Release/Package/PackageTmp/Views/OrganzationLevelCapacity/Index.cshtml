@@ -11,7 +11,7 @@
 </style>
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
-    
+
 <div class="form-horizontal col-lg-12" style="font-size:16px;padding-top:4%">
 
     <div class="row pl-2 pr-5 pt-3 formDiv">
@@ -34,6 +34,13 @@
         <h5>Total Project Capacity</h5>
     </div>
     <div id="tblTotalProjectCapacity" class="dvTableData">
+
+    </div>
+
+    <div id="dvhead3" class="row mt-4">
+        <h5>Total Team Capacity Details</h5>
+    </div>
+    <div id="tblTotalTeamCapacityDetails" class="dvTeamTableData">
 
     </div>
 </div>
@@ -117,6 +124,51 @@
                         j = 0;
 
                     });
+//-----------------------------------------------------------------------------------------------------
+                    var tabledata = '';
+                    tabledata = "<table class='dataTable table-traceability table table-bordered table-sm' id='totalTeamCapTable'><thead> <tr><th></th><th>Project Name</th><th>Total Capacity(Current Sprint)</th></tr></thead><tbody>";
+                    for (let key1 in data.projectCapacity) {
+                        if (data.projectCapacity.hasOwnProperty(key1)) {
+                            tabledata += "<tr class='details-control'><td class='details-control' style='vertical-align:top'></td><td>" + key1 + "</td><td>" + data.projectCapacity[key1] + "</td></tr > ";
+                        }   
+                    }
+                    tabledata += "</tbody></table>";
+                    $('#tblTotalTeamCapacityDetails').html(tabledata);
+                    var LeaveTableData = $("#totalTeamCapTable").DataTable();
+                    $(".custom-select").removeClass("custom-select");
+
+
+                    $('#totalTeamCapTable tbody').on('click', 'tr.details-control', function () {
+                        var tr = $(this).closest('tr');
+                        var row = LeaveTableData.row(tr);
+                        if (row.child.isShown()) {
+                            // This row is already open - close it
+                            $('div.slider', row.child()).slideUp(function () {
+                                row.child.hide();
+                                tr.removeClass('shown');
+                            });
+                        }
+                        else {
+
+                            var a = $(".shown");
+                            for (var n = 0; n < a.length; n++) {
+                                var hiderow = LeaveTableData.row(a[n]);
+                                $('div.slider', hiderow.child()).slideUp(function () {
+                                    hiderow.child.hide();
+                                });
+                                a[n].classList.remove("shown");
+
+                            }
+                            row.child(formatData(row.data()[1], data)).show();
+                            tr.addClass('shown');
+                            //$('div.slider').slideDown('1000');
+                            $('div.slider', row.child(formatData(row.data()[1], data))).slideDown('1000');
+
+
+                        }
+                        j = 0;
+
+                    });
 
                     $('#dvhead4Test').css("display", "");
                 }
@@ -130,21 +182,16 @@
                 var head = "<thead><tr style=''>";
                 var body = "<tbody><tr style=''>";
 
-                head += "<th>  Team Name  </th> <th> Capacity  </th>";
-                    if (data.ProjectTeamCapacity.hasOwnProperty(d)) {
-                        console.log("inside format1");
-                        for (let key2 in data.ProjectTeamCapacity[d]) {
-                            if (data.ProjectTeamCapacity[d].hasOwnProperty(key2)) {
-                                console.log(data.ProjectTeamCapacity[d]);
-
-
-                                body += "<tr><td> " + key2 + " </td><td> " + data.ProjectTeamCapacity[d][key2] + " </td></tr>";
+            head += "<th>  Team Name  </th> <th> Capacity  </th><th>Iteration Start</th><th>Iteration End</th>";
+            if (data.ProjectTeamCapacity.hasOwnProperty(d)) {
+                console.log(data.ProjectTeamCapacity[d]);
+                for (let key4 in data.ProjectTeamCapacity[d][0].TeamWiseCapacityDetails) {
+                    console.log(data.ProjectTeamCapacity[d][0]["TeamWiseCapacityDetails"][key4]);
+                    if (data.ProjectTeamCapacity[d][0]["TeamWiseCapacityDetails"].hasOwnProperty(key4)) {
+                        body += "<tr><td> " + key4 + " </td><td> " + data.ProjectTeamCapacity[d][0]["TeamWiseCapacityDetails"][key4] + " </td><td> " + data.ProjectTeamCapacity[d][0]["iterationStart"] + " </td><td> " + data.ProjectTeamCapacity[d][0]["iterationEnd"] + " </td></tr>";
+                                    }
+                                }
                             }
-                        }
-
-                    }
-
-
 
                 head += "</thead>";
                 body += "</tbody>";
@@ -157,4 +204,35 @@
                 return s;
         };
 
+
+    function formatData(d, data) {
+       
+        var s = '<div class="slider" style="margin-left:30px;margin-right:100px; background-color: seashell; "><table  class="table table-bordered table-sm table-traceability" >';
+        var head = "<thead><tr style=''>";
+        var body = "<tbody><tr style=''>";
+        var teams = [];
+        // head += "<th>  Team Name  </th> <th> Capacity  </th><th>Iteration Start</th><th>Iteration End</th>";
+       
+        //if (data.ProjectTeamCapacity.hasOwnProperty(d)) {
+        //    for (let key4 in data.ProjectTeamCapacity[d][0].TeamWiseCapacityDetails) {
+        //        if (data.ProjectTeamCapacity[d][0]["TeamWiseCapacityDetails"].hasOwnProperty(key4)) {
+        //            body += "<tr><td> " + key4 + " </td><td> " + data.ProjectTeamCapacity[d][0]["TeamWiseCapacityDetails"][key4] + " </td><td> " + data.ProjectTeamCapacity[d][0]["iterationStart"] + " </td><td> " + data.ProjectTeamCapacity[d][0]["iterationEnd"] + " </td></tr>";
+        //        }
+        //    }
+        //}
+
+        if (data.projectCapacityModel.hasOwnProperty(d)) {
+
+        }
+            console.log(data.projectCapacityModel);
+        head += "</thead>";
+        body += "</tbody>";
+
+        s += head + body;
+        s += '</table></div>';
+        console.log(s);
+        $('#dataTable').addClass('table table-bordered table-sm  table-bordered table-traceability');
+        $('#dataTable.thead').addClass('text-light');
+        return s;
+    };
 </script>
