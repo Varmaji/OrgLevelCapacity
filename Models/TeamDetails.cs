@@ -20,7 +20,7 @@ namespace OrgLevelTeamCapacity.Models
         public string identityUrl { get; set; }
         public string projectName { get; set; }
         public string projectId { get; set; }
-
+        public int capacity { get; set; }
     }
    
 }

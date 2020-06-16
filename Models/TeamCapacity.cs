@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using OrgLevelTeamCapacity.Models;
+using System.Collections.Generic;
+using System.Dynamic;
 
 namespace CustomReport.Models
 {
@@ -15,6 +16,7 @@ namespace CustomReport.Models
         public Dictionary<string, List<CapacityDetails>> projectCapacityModel { get; set; }
         public Dictionary<string, int> projectCapacity { get; set; }
         public Dictionary<string, List<PTCapacity>> ProjectTeamCapacity { get; set; }
+        public Dictionary<string, List<CapByTeamMember>> PrjCapByTeamMember { get; set; }
     }
 
     public class PTCapacity
@@ -110,6 +112,7 @@ namespace CustomReport.Models
     }
     public class Capacity
     {
+        public string teamName { get; set; }
         public TeamMember teamMember { get; set; }
         public List<Activities> activities { get; set; }
         public List<Leaves> daysOff { get; set; }
@@ -144,5 +147,37 @@ namespace CustomReport.Models
     {
         public string capacityPerDay { get; set; }
         public string name { get; set; }
+    }
+
+
+
+    //------------------------------
+    public class OrgLevelUsers
+    {
+        public Dictionary<string, orgUserByTeam> OrgUsersByTeam { get; set; }
+
+    }
+
+    public class orgUserByTeam
+    {
+        public Dictionary<string, userProject> UserProjects { get; set; }
+        public float capacity { get; set; }
+        public string name { get; set; }
+        public string id { get; set; }
+        public string mailID { get; set; }
+
+    }
+
+    public class userProject
+    {
+        public Dictionary<string, userTeam> ProjectTeams { get; set; }
+        public float capacity { get; set; }
+        public string name { get; set; }
+    }
+
+    public class userTeam
+    {
+        public string name { get; set; }
+        public float capacity { get; set; }
     }
 }

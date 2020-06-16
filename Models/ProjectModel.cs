@@ -1,27 +1,44 @@
-﻿using System;
+﻿using CustomReport.Models.OrgModel;
+using OrgLevelTeamCapacity.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace OrgLevelTeamCapacity.Models
+namespace CustomReport.Models.ProjectModel
 {
-
     public class ProjectModel
     {
-        public int count { get; set; }
-        public IList<Value> value { get; set; }
-
+        public int Count { get; set; }
+        //public string value { get; set; }
+        public List<ProjectDetails> Value { get; set; }
+        public List<ProjectDetails> WorkItems { get; set; }
+        public ProjectDetails ProjectDetails { get; set; }
     }
-    public class Value
+
+    public class AuthoredBy
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string url { get; set; }
-        public string state { get; set; }
-        public int revision { get; set; }
-        public string visibility { get; set; }
-        public DateTime lastUpdateTime { get; set; }
-
+        public string descriptor { get; set; }
     }
-    
+
+    public class ProjectDetails
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Url { get; set; }
+        public string State { get; set; }
+        public int Revision { get; set; }
+        public string Visibility { get; set; }
+        public DateTime LastUpdateTime { get; set; }
+        public orgCounts counts { get; set; }
+        public AuthoredBy authoredBy { get; set; }
+        public string originId { get; set; }
+
+
+
+        public List<Group> Groups { get; set; }
+
+
+  
+    }
+
+
 }

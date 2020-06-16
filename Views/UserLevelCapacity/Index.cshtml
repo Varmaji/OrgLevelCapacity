@@ -1,0 +1,149 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<style>
+    td.details-control {
+        background: url('../../Content/images/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../../Content/images/details_close.png') no-repeat center center;
+    }
+</style>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: '@Url.Action("AccountList","Account")',
+            success: function (data) {
+                 var s = '<option value="0">--Choose Organisation--</option>';
+                $("#org").empty();
+
+                for (var i = 0; i < data.length; i++) {
+                    s += '<option value="' + data[i].accountName + '">' + data[i].accountName + '</option>';
+                }
+                $("#org").append(s);
+            }
+        });
+    });
+
+    $('#org').change(function () {
+        var organ=$('#org').val();
+        $.ajax({
+            type: 'get',
+            data: { 'organ': organ },
+            url: '@Url.Action("UserLevelCapacity", "UserLevelCapacity")',
+            success: function (data) {
+                document.getElementById("loading").hidden = true;
+                var tabledata = '';
+                tabledata = "<table class='dataTable table-traceability table table-bordered table-sm' id='totalUserTable'><thead> <tr><th></th><th>UserName</th><th>Total Capacity</th></tr></thead><tbody>";
+                for (i = 0; i < data.OrgUsers.length; i++) {
+                    let row = data.OrgUsers[i];
+                    let dt1 = data.UsersByTeam.OrgUsersByTeam;
+                    for (let key in dt1) {
+                        if (key == data.OrgUsers[i].user.user.displayName) {
+                            tabledata += "<tr class='details-control'><td class='details-control' style='vertical-align:top'></td><td>" + row.user.user.displayName + "</td><td>"+dt1[key].capacity+"</td></tr>";
+                        }
+                    }
+
+                }
+                tabledata += "</tbody></table>";
+                $('#tblTotalProjectCapacity').html(tabledata);
+                var LeaveTable = $("#totalUserTable").DataTable();
+                $(".custom-select").removeClass("custom-select");
+
+                $('#totalUserTable tbody').on('click', 'tr.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var row = LeaveTable.row(tr);
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        $('div.slider', row.child()).slideUp(function () {
+                            row.child.hide();
+                            tr.removeClass('shown');
+                        });
+                    }
+                    else {
+
+                        var a = $(".shown");
+                        for (var n = 0; n < a.length; n++) {
+                            var hiderow = LeaveTable.row(a[n]);
+                            $('div.slider', hiderow.child()).slideUp(function () {
+                                hiderow.child.hide();
+                            });
+                            a[n].classList.remove("shown");
+
+                        }
+                        row.child(format(row.data()[1], data)).show();
+                        tr.addClass('shown');
+                        //$('div.slider').slideDown('1000');
+                        $('div.slider', row.child(format(row.data()[1], data))).slideDown('1000');
+
+
+                    }
+                    j = 0;
+                })
+            }
+        });
+    });
+    function format(d, data) {
+        var s = '<div class="slider" style="margin-left:30px;margin-right:100px; background-color: seashell; "><table  class="table table-bordered table-sm table-traceability" >';
+        var head = "<thead><tr style=''>";
+        var body = "<tbody><tr style=''>";
+
+        head += "<th>  Project Name </th><th></th><th></th> <th> Total Capatiy of Project </th>";
+        let row = data.UsersByTeam.OrgUsersByTeam;
+        for (let key in row)
+            if (key == d) {
+                for (let key2 in row[key].UserProjects) {
+                    var len = Object.keys(row[key].UserProjects[key2].ProjectTeams).length;
+                    var len1 = len + 1;
+                    body += "<tr><td rowspan='"+len1+"'>" + key2 + "</td><th>Team Name</th><th>Team Capacity</th>";
+                    body += "<td rowspan='" + len1 +"'>" + row[key].UserProjects[key2].capacity + "</td></tr>";
+                    for (let key3 in row[key].UserProjects[key2].ProjectTeams) {
+                        body += "<tr style='background-color: aqua;'><td>" + key3 + "</td><td>" + row[key].UserProjects[key2].ProjectTeams[key3].capacity + "</td></tr>";
+                    }
+
+
+                }
+            }
+
+        head += "</thead>";
+        body += "</tbody>";
+
+        s += head + body;
+        s += '</table></div>';
+        $('#dataTable').addClass('table table-bordered table-sm  table-bordered table-traceability');
+        $('#dataTable.thead').addClass('text-light');
+        return s;
+    };
+
+
+</script>
+
+<div class="form-horizontal col-lg-12" style="font-size:16px;padding-top:4%">
+    <div class="row pl-2 pr-5 pt-3 formDiv">
+        <div class="col-md-3">
+            <label>Organization</label>
+            <select id="org"></select>
+            <p id="NoOrgSelected" hidden="hidden" class="text-danger">!!!Please Select Any Organisation</p>
+
+        </div>
+    </div>
+    <img id="loading" class="loader" src="~/Content/images/load.gif" height="100" width="100" hidden/>
+</div>
+<div id="divReports" hidden>
+    <div id="dvhead2" class="row mt-4">
+        <h5>Users Project Team Capacity</h5>
+    </div>
+    <div id="tblTotalProjectCapacity" class="dvTableData">
+
+    </div>
+</div>
+

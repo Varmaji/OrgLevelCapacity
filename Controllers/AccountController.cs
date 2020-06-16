@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using DisplayUsersWebApp.Services;
 using OrgLevelTeamCapacity.Models;
+using CustomReport.Models.ProjectModel;
 
 namespace CustomReport.Controllers
 {
@@ -43,12 +44,12 @@ namespace CustomReport.Controllers
             return Json(accountList.value, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
-        public JsonResult ProjectList(string ORG)
-        {
-            var pm = service.GetApi<ProjectModel>("https://dev.azure.com/" + ORG + "/_apis/projects?api-version=5.1");
-            return Json(pm.value, JsonRequestBehavior.AllowGet);
-        }
+        //[HttpPost]
+        //public JsonResult ProjectList(string ORG)
+        //{
+        //    var pm = service.GetApi<ProjectModel>("https://dev.azure.com/" + ORG + "/_apis/projects?api-version=5.1");
+        //    return Json(pm.value, JsonRequestBehavior.AllowGet);
+        //}
 
        
 

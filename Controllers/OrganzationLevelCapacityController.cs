@@ -15,6 +15,7 @@ using System.Web;
 using System.Web.Mvc;
 using IterationDetails = CustomReport.Models.IterationDetails;
 using DisplayUsersWebApp.Services;
+using CustomReport.Models.ProjectModel;
 
 namespace OrgLevelTeamCapacity.Controllers
 {
@@ -76,7 +77,8 @@ namespace OrgLevelTeamCapacity.Controllers
             string responseBody = "";
             capacity.projectCapacityModel = new Dictionary<string, List<CapacityDetails>>();
             capacity.projectCapacity = new Dictionary<string, int>();
-            
+            capacity.PrjCapByTeamMember = new Dictionary<string, List<CapByTeamMember>>();
+
             // capacity.CurrentprojectCapacity = new Dictionary<string, int>();
             try
             {
@@ -95,12 +97,12 @@ namespace OrgLevelTeamCapacity.Controllers
                         project = JsonConvert.DeserializeObject<ProjectModel>(responseBody);
                     }
                 }
-                if (project.value != null && project.value.Count > 0)
+                if (project.Value != null && project.Value.Count > 0)
                 {
-                    foreach (var Projectitem in project.value)
+                    foreach (var Projectitem in project.Value)
                     {
                         TeamDetails teamDetail = new TeamDetails();
-                        string ProjName = Projectitem.name;
+                        string ProjName = Projectitem.Name;
                         using (HttpClient client = new HttpClient())
                         {
                             client.DefaultRequestHeaders.Accept.Add(
@@ -124,7 +126,6 @@ namespace OrgLevelTeamCapacity.Controllers
                                 IterationDetails iterationDetails = new IterationDetails();
                                 string teamName = "";
                                 List<IterationDetails> ListIterateDetails = new List<IterationDetails>();
-                                // Dictionary<string, List<TeamIterationDetails>> TeamIterationValues = new Dictionary<string, List<TeamIterationDetails>>();
                                 foreach (var team in teamDetail.value)
                                 {
                                     teamName = team.name;
@@ -215,17 +216,19 @@ namespace OrgLevelTeamCapacity.Controllers
             var individualTeamCapacity = 0.0;//TeamCapacity total
             var remainingCapacity = 0.0; ;
             Dictionary<string, int> TeamWiseTotalCapacity = new Dictionary<string, int>();
-           
+            List<CapByTeamMember> CapByTeamList = new List<CapByTeamMember>();
             foreach (var i in capacityList)
             {
                 // remainingindividualTeamCapacity = 0;
                 individualTeamCapacity = 0;
                 foreach (var j in i.value)
                 {
+                    CapByTeamMember capbyteam = new CapByTeamMember();
                     Double Dayoff = 0.0;
                     int TotalOffs = 0;
                     if (j.activities.Count > 0)
                     {
+                        j.teamName = i.teamName;
                         var perUserCap = j.activities[0].capacityPerDay;
                         float.TryParse(perUserCap, out float val);
                         if (j.daysOff.Count > 0)
@@ -243,6 +246,9 @@ namespace OrgLevelTeamCapacity.Controllers
                     }
                     pTCapacity.iterationStart = Convert.ToDateTime(i.iterationStart).ToString("MM/dd/yyyy");
                     pTCapacity.iterationEnd = Convert.ToDateTime(i.iterationEnd).ToString("MM/dd/yyyy");
+
+
+
                 }
                 pTCapacity.TeamWiseCapacityDetails.Add(i.teamName, (int)individualTeamCapacity);
                 pTCapacity.iterationPath = i.IterationPath;
