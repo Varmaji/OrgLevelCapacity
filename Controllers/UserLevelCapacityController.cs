@@ -182,27 +182,28 @@ namespace DisplayUsersWebApp.Controllers
                                 capacitydetails=JsonConvert.DeserializeObject<CustomReport.Models.CapacityDetails>(response);
                                 foreach(var userCap in capacitydetails.value)
                                 {
-                                   if(!orgLevelUsers.OrgUsersByTeam.ContainsKey(userCap.teamMember.displayName))
+                                   if(!orgLevelUsers.OrgUsersByTeam.ContainsKey(userCap.teamMember.uniqueName))
                                     {
+                                       
 
-                                        orgLevelUsers.OrgUsersByTeam.Add(userCap.teamMember.displayName, new orgUserByTeam() { name = userCap.teamMember.displayName, id = userCap.teamMember.displayName, mailID = userCap.teamMember.uniqueName, UserProjects = new Dictionary<string, userProject>() });
+                                        orgLevelUsers.OrgUsersByTeam.Add(userCap.teamMember.uniqueName, new orgUserByTeam() { name = userCap.teamMember.displayName, id = userCap.teamMember.id, mailID = userCap.teamMember.uniqueName, UserProjects = new Dictionary<string, userProject>() });
                                     }
                                    
-                                    orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].capacity +=float.Parse(userCap.activities[0].capacityPerDay);
+                                    orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].capacity +=float.Parse(userCap.activities[0].capacityPerDay);
                                    
-                                    if (!orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects.ContainsKey(project.Name))
+                                    if (!orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects.ContainsKey(project.Name))
                                     {
-                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects.Add(project.Name, new userProject() { name = project.Name, ProjectTeams = new Dictionary<string, userTeam>() });
+                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects.Add(project.Name, new userProject() { name = project.Name, ProjectTeams = new Dictionary<string, userTeam>() });
                                     }
-                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects[project.Name].capacity += float.Parse(userCap.activities[0].capacityPerDay);
+                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects[project.Name].capacity += float.Parse(userCap.activities[0].capacityPerDay);
                                     
 
-                                   if (!orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects[project.Name].ProjectTeams.ContainsKey(ListIterations.teamname))
+                                   if (!orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects[project.Name].ProjectTeams.ContainsKey(ListIterations.teamname))
                                     {
-                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects[project.Name].ProjectTeams.Add(ListIterations.teamname, new userTeam() { name = ListIterations.teamname});
+                                        orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects[project.Name].ProjectTeams.Add(ListIterations.teamname, new userTeam() { name = ListIterations.teamname});
                                     }
 
-                                    orgLevelUsers.OrgUsersByTeam[userCap.teamMember.displayName].UserProjects[project.Name].ProjectTeams[ListIterations.teamname].capacity += float.Parse(userCap.activities[0].capacityPerDay);
+                                    orgLevelUsers.OrgUsersByTeam[userCap.teamMember.uniqueName].UserProjects[project.Name].ProjectTeams[ListIterations.teamname].capacity += float.Parse(userCap.activities[0].capacityPerDay);
 
                                 }
                             }

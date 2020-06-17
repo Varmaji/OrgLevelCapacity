@@ -21,7 +21,7 @@
     <div class="row pl-2 pr-5 pt-3 formDiv">
         <div class="col-md-3">
             <label><h2>Organization</h2></label>
-            <select id="org"></select>
+            <select id="org" class="form-control"></select>
             <p id="NoOrgSelected" hidden="hidden" class="text-danger">!!!Please Select Any Organisation</p>
 
         </div>
@@ -72,13 +72,15 @@
                 document.getElementById('loading').hidden = true; 
                 console.log(data);
                 var tabledata = '';
-                tabledata = "<table class='dataTable table-traceability table table-bordered table-sm' id='totalUserTable'><thead> <tr><th></th><th>UserName</th><th>Total Capacity</th></tr></thead><tbody>";
+                tabledata = "<table class='dataTable table-traceability table table-bordered table-sm' id='totalUserTable'  style='background-color: #fab7b7;'><thead> <tr><th></th><th>UserName</th><th>Email-ID</th><th>Total Capacity</th></tr></thead><tbody>";
                 for (i = 0; i < data.OrgUsers.length; i++) {
                     let row = data.OrgUsers[i];
                     let dt1 = data.UsersByTeam.OrgUsersByTeam;
+                    console.log("This is row");
+                    console.log(row);
                     for (let key in dt1) {
-                        if (key == data.OrgUsers[i].user.user.displayName) {
-                            tabledata += "<tr class='details-control'><td class='details-control' style='vertical-align:top'></td><td>" + row.user.user.displayName + "</td><td>"+dt1[key].capacity+"</td></tr>";
+                        if (key == row.user.user.mailAddress) {
+                            tabledata += "<tr class='details-control'><td class='details-control' style='vertical-align:top'></td><td>" + row.user.user.displayName + "</td><td>" + row.user.user.mailAddress +"</td><td>"+dt1[key].capacity+"</td></tr>";
                         }
                     }
 
@@ -109,10 +111,10 @@
                             a[n].classList.remove("shown");
 
                         }
-                        row.child(format(row.data()[1], data)).show();
+                        row.child(format(row.data()[2], data)).show();
                         tr.addClass('shown');
                         //$('div.slider').slideDown('1000');
-                        $('div.slider', row.child(format(row.data()[1], data))).slideDown('1000');
+                        $('div.slider', row.child(format(row.data()[2], data))).slideDown('1000');
 
 
                     }
@@ -140,7 +142,7 @@
                     body += "<tr><td rowspan='"+len1+"'>" + key2 + "</td><th>Team Name</th><th>Team Capacity</th>";
                     body += "<td rowspan='" + len1 +"'>" + row[key].UserProjects[key2].capacity + "</td></tr>";
                     for (let key3 in row[key].UserProjects[key2].ProjectTeams) {
-                        body += "<tr style='background-color: aqua;'><td>" + key3 + "</td><td>" + row[key].UserProjects[key2].ProjectTeams[key3].capacity + "</td></tr>";
+                        body += "<tr style='background-color: #dddddd;'><td>" + key3 + "</td><td>" + row[key].UserProjects[key2].ProjectTeams[key3].capacity + "</td></tr>";
                     }
                    
 
